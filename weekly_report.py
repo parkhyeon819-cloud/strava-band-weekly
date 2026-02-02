@@ -68,11 +68,16 @@ def fetch_club_activities(access_token: str, per_page=200, max_pages=10):
 
 
 def to_kst(dt_str: str) -> datetime:
-    # Strava는 보통 ISO 문자열(UTC)을 줌. 예: "2026-02-01T03:12:34Z"
+    # "2026-02-01T03:12:34Z" 또는 "2026-02-01T12:12:34" (tz 없음) 모두 처리
     if dt_str.endswith("Z"):
-        dt_str = dt_str.replace("Z", "+00:00")
-    dt_utc = datetime.fromisoformat(dt_str)
-    return dt_utc.astimezone(KST)
+        dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
+    else:
+        dt = datetime.fromisoformat(dt_str)
+        # tz 정보가 없으면 '로컬시간'으로 보고 KST로 붙여줌
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=KST)
+    return dt.astimezone(KST)
+
 
 
 def build_leaderboard(activities, start_kst: datetime, end_kst: datetime):
