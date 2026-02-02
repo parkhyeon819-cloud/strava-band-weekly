@@ -85,7 +85,7 @@ def build_leaderboard(activities, start_kst: datetime, end_kst: datetime):
 
     for a in activities:
         # 활동 시작 시각
-        dt = to_kst(a["start_date"])
+        dt_str = a.get("start_date") or a.get("start_date_local")
         if not (start_kst <= dt < end_kst):
             continue
 
