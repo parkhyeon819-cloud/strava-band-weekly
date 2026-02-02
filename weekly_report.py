@@ -89,8 +89,12 @@ def build_leaderboard(activities, start_kst: datetime, end_kst: datetime):
     by_athlete = {}
 
     for a in activities:
-        # 활동 시작 시각
+        # 활동 시작 시각 (start_date 없으면 start_date_local 사용)
         dt_str = a.get("start_date") or a.get("start_date_local")
+        if not dt_str:
+            continue
+
+        dt = to_kst(dt_str)
         if not (start_kst <= dt < end_kst):
             continue
 
@@ -109,6 +113,7 @@ def build_leaderboard(activities, start_kst: datetime, end_kst: datetime):
         by_athlete[athlete_id]["dist_m"] += dist_m
         by_athlete[athlete_id]["elev_m"] += elev_m
         by_athlete[athlete_id]["rides"] += 1
+
 
     rows = []
     for _, v in by_athlete.items():
